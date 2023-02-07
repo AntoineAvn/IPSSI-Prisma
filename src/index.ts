@@ -2,7 +2,7 @@ import express from 'express'
 import * as dotenv from 'dotenv'
 import { protect } from './modules/auth'
 import userRouter from './routes/user'
-import { createNewUser } from './handlers/user'
+import { createNewUser, signIn } from './handlers/user'
 
 dotenv.config()
 
@@ -15,10 +15,11 @@ app.get('/', async (req, res) => {
 })
 
 app.use('/api', protect, [
-  userRouter
+  userRouter,
 ])
 
 app.post('/sign-up', createNewUser)
+app.post('/sign-in', signIn)
 
 app.listen(1234, () => {
   console.log('Listening on port 1234')

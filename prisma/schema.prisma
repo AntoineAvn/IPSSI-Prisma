@@ -14,7 +14,7 @@ model TodoList {
   id        String     @id @unique @default(uuid())
   name      String
   todoItems TodoItem[]
-  user      User      @relation(fields: [userId], references: [id])
+  user      User       @relation(fields: [userId], references: [id])
   userId    String
 }
 
@@ -30,5 +30,6 @@ model User {
   id        String     @id @unique @default(uuid())
   username  String     @unique @db.VarChar(64)
   password  String
+  name      String     @default("Default user name")
   todoLists TodoList[]
 }
