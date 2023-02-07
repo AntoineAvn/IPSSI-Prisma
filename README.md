@@ -21,3 +21,9 @@ $ pnpm prisma migrate dev
 ```bash
 $ pnpm dev
 ```
+
+
+Launch Prisma studio 
+```bash
+$ pnpm prisma studio
+```
