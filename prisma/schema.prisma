@@ -22,7 +22,7 @@ model TodoItem {
   id          String   @id @unique @default(uuid())
   description String
   todoListId  String
-  todoList    TodoList @relation(fields: [todoListId], references: [id])
+  todoList    TodoList @relation(fields: [todoListId], references: [id], onDelete: Cascade)
   status      Boolean  @default(false)
 }
 

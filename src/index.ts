@@ -2,6 +2,8 @@ import express from 'express'
 import * as dotenv from 'dotenv'
 import { protect } from './modules/auth'
 import userRouter from './routes/user'
+import todoListRouter from './routes/todoList'
+import todoItemRouter from './routes/todoItem'
 import { createNewUser, signIn } from './handlers/user'
 
 dotenv.config()
@@ -16,6 +18,8 @@ app.get('/', async (req, res) => {
 
 app.use('/api', protect, [
   userRouter,
+  todoListRouter,
+  todoItemRouter
 ])
 
 app.post('/sign-up', createNewUser)

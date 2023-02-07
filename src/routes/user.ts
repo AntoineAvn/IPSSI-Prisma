@@ -37,6 +37,12 @@ app.put('/user', async (req, res) => {
       }
     })
 
+    db.todoList.findMany({
+      where: {
+        userId: req.user.id
+      }
+    })
+
     return res.status(200).json(updatedUser)
   } catch(e) {
     console.error(e)
