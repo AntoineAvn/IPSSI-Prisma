@@ -4,13 +4,13 @@ import * as bcrypt from 'bcrypt'
 
 export interface JWTUser {
   id: string;
-  name: string;
+  username: string;
 }
 
 export const createJWT = (user: JWTUser) => {
   const token = jwt.sign({
     id: user.id,
-    name: user.name
+    name: user.username
   }, (process.env.JWT_SECRET as string))
   return token
 }
