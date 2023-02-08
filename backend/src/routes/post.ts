@@ -20,23 +20,31 @@ app.get("/posts", async (req, res) => {
   }
 });
 
-app.get("/post/:uuid", async (req, res) => {
+app.get("/post", async (req, res) => {
   try {
-    const post = await db.post.findFirstOrThrow({
+    // Read the from parameter from the query string
+    const fromTimestamp = req.query.from;
+
+    // Query the database using Prisma's ORM
+    const posts = await db.post.findMany({
       where: {
-        id: req.params.uuid,
+        createdAt: { gt: fromTimestamp },
         userId: req.user.id,
       },
       include: {
         comments: true,
       },
+      orderBy: {
+        createdAt: "asc",
+      },
     });
 
-    return res.status(200).json(post);
+    return res.status(200).json(posts);
   } catch (e) {
-    return res.status(400).json({ message: "Not found" });
+    return res.status(400).json({ message: "Error while fetching posts" });
   }
 });
+
 
 app.post(
   "/post",
