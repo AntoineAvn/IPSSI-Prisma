@@ -2,8 +2,8 @@ import express from 'express'
 import * as dotenv from 'dotenv'
 import { protect } from './modules/auth'
 import userRouter from './routes/user'
-import todoListRouter from './routes/todoList'
-import todoItemRouter from './routes/todoItem'
+import postRouter from './routes/post'
+import commentRouter from './routes/comment'
 import { createNewUser, signIn } from './handlers/user'
 import cors from 'cors'
 
@@ -23,8 +23,8 @@ app.get('/', async (req, res) => {
 
 app.use('/api', protect, [
   userRouter,
-  todoListRouter,
-  todoItemRouter
+  postRouter,
+  commentRouter
 ])
 
 app.post('/sign-up', createNewUser)

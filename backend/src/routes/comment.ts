@@ -4,9 +4,9 @@ import { body, validationResult } from 'express-validator'
 
 const router = Router()
 
-const isUsersTodo: RequestHandler = async (req, res, next) => {
+const isUsersPost: RequestHandler = async (req, res, next) => {
   try {
-    const isOwner = await db.todoList.findFirstOrThrow({
+    const isOwner = await db.post.findFirstOrThrow({
       where: {
         userId: req.user.id
       }
@@ -22,21 +22,21 @@ const isUsersTodo: RequestHandler = async (req, res, next) => {
 } 
 
 router.post(
-  '/todoItem',
-  body('todoListId').isUUID(),
+  '/comment',
+  body('postId').isUUID(),
   body('description').isString(),
-  isUsersTodo,
+  isUsersPost,
   async (req, res) => {
     try {
       validationResult(req).throw()
-      const createdTodoItem  = await db.todoItem.create({
+      const createdComment  = await db.comment.create({
         data: {
-          todoListId: req.body.todoListId,
+          postId: req.body.postId,
           description: req.body.description
         },
       })
 
-      return res.status(201).json(createdTodoItem)
+      return res.status(201).json(createdComment)
     } catch (e) {
       return res.status(400).json({ message: e || 'Error during creation'})
     }
@@ -44,13 +44,13 @@ router.post(
 )
 
 router.put(
-  '/todoItem/:uuid',
-  isUsersTodo,
+  '/comment/:uuid',
+  isUsersPost,
   body('description').isLength({ min: 1 }),
   async (req, res) => {
     try {
       validationResult(req).throw()
-      const updatedItem = await db.todoItem.update({
+      const updatedComment = await db.comment.update({
         where: {
           id: req.params?.uuid
         },
@@ -58,7 +58,7 @@ router.put(
           description: req.body.description
         }
       })
-      res.status(200).json(updatedItem)
+      res.status(200).json(updatedComment)
     } catch(e) {
       return res.status(400).json({ message: e || 'Error during update'})
     }
@@ -66,12 +66,12 @@ router.put(
 )
 
 router.delete(
-  '/todoItem/:uuid',
-  isUsersTodo,
+  '/comment/:uuid',
+  isUsersPost,
   async (req, res) => {
     try {
       const deletedId = req.params.uuid
-      await db.todoItem.delete({
+      await db.comment.delete({
         where: {
           id: deletedId
         }
