@@ -2,12 +2,12 @@ import merge from "lodash.merge";
 import * as dotenv from 'dotenv'
 
 dotenv.config()
- 
+
 process.env.NODE_ENV = process.env.NODE_ENV || 'development'
- 
+
 const stage = process.env.STAGE || "local";
 let envConfig;
- 
+
 if (stage === "production") {
   envConfig = require("./production").default;
 } else if (stage === "staging") {
@@ -15,7 +15,7 @@ if (stage === "production") {
 } else {
   envConfig = require("./local").default;
 }
- 
+
 export default merge({
   stage,
   env: process.env.NODE_ENV,

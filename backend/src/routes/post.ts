@@ -65,7 +65,21 @@ app.put(
   async (req, res) => {
     try {
       validationResult(req).throw();
-      const updatedpost = await db.post.update({
+
+      // Retrieve the post from the database
+      const post = await db.post.findOne({ where: { id: req.params?.uuid } });
+
+      // Check if the post exists
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+
+      // Check if the user is authorized to update the post
+      if (post.userId !== req.user.id) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const updatedPost = await db.post.update({
         where: {
           id: req.params?.uuid,
         },
@@ -74,12 +88,13 @@ app.put(
         },
       });
 
-      return res.status(200).json(updatedpost);
+      return res.status(200).json(updatedPost);
     } catch (e) {
       return res.status(400).json({ message: e || "Error while updating" });
     }
   }
 );
+
 
 app.delete("/post/:uuid", async (req, res) => {
   try {
