@@ -95,11 +95,6 @@ router.delete(
   async (req, res) => {
     try {
       const deletedId = req.params.uuid
-      await db.comment.delete({
-        where: {
-          id: deletedId
-        }
-      })
       const comment = await db.comment.findFirst({
         where: {
           id: req.params?.uuid,
@@ -113,6 +108,11 @@ router.delete(
           .status(403)
           .json({ message: "You are not allowed to delete this comment" });
       }
+      await db.comment.delete({
+        where: {
+          id: deletedId
+        }
+      })
       res.status(200).json({ message: `Successfully deleted ${deletedId}`})
     } catch(e) {
       return res.status(400).json({ e: e || 'Error during deletion'})
