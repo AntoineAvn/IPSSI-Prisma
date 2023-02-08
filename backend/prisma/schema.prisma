@@ -25,12 +25,15 @@ model Comment {
   postId      String
   post        Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
   status      Boolean @default(false)
+  user        User    @relation(fields: [userId], references: [id])
+  userId      String
 }
 
 model User {
-  id       String @id @unique @default(uuid())
-  username String @unique @db.VarChar(64)
+  id       String    @id @unique @default(uuid())
+  username String    @unique @db.VarChar(64)
   password String
-  name     String @default("Default user name")
+  name     String    @default("Default user name")
   posts    Post[]
+  comments Comment[]
 }
