@@ -115,7 +115,17 @@ app.delete("/post/:uuid", async (req, res) => {
         id: req.params.uuid,
       },
     });
+    const post = await db.post.findUnique({ where: { id: req.params?.uuid } });
 
+    // Check if the post exists
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Check if the user is authorized to delete the post
+    if (post.userId !== req.user.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
     return res
       .status(200)
       .json({ message: `Succesfully deleted ${req.params.uuid}` });

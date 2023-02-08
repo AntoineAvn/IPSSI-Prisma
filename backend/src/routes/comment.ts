@@ -100,6 +100,19 @@ router.delete(
           id: deletedId
         }
       })
+      const comment = await db.comment.findFirst({
+        where: {
+          id: req.params?.uuid,
+        },
+      });
+      if (!comment) {
+        return res.status(400).json({ message: "Comment not found" });
+      }
+      if (comment.userId !== req.user.id) {
+        return res
+          .status(403)
+          .json({ message: "You are not allowed to delete this comment" });
+      }
       res.status(200).json({ message: `Successfully deleted ${deletedId}`})
     } catch(e) {
       return res.status(400).json({ e: e || 'Error during deletion'})
