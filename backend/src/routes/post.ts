@@ -76,7 +76,7 @@ app.put(
       validationResult(req).throw();
 
       // Retrieve the post from the database
-      const post = await db.post.findOne({ where: { id: req.params?.uuid } });
+      const post = await db.post.findUnique({ where: { id: req.params?.uuid } });
 
       // Check if the post exists
       if (!post) {
