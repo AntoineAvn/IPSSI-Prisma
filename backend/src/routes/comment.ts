@@ -31,6 +31,7 @@ router.post(
       validationResult(req).throw()
       const createdComment  = await db.comment.create({
         data: {
+          userId: req.user.id,
           postId: req.body.postId,
           description: req.body.description
         },
@@ -64,11 +65,11 @@ router.put(
       }
 
       // Check if the comment belongs to the user who is making the request
-      // if (comment.userId !== req.user.id) {
-      //   return res
-      //     .status(403)
-      //     .json({ message: "You are not allowed to modify this comment" });
-      // }
+      if (comment.userId !== req.user.id) {
+        return res
+          .status(403)
+          .json({ message: "You are not allowed to modify this comment" });
+      }
 
       // Update the comment
       const updatedComment = await db.comment.update({
