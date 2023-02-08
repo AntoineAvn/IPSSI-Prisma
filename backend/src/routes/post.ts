@@ -6,22 +6,6 @@ const app = Router();
 
 app.get("/posts", async (req, res) => {
   try {
-    const posts = await db.post.findMany({
-      where: {
-        userId: req.user.id,
-      },
-      include: {
-        comments: true,
-      },
-    });
-    return res.status(200).json(posts);
-  } catch (e) {
-    return res.status(400).json({ error: e });
-  }
-});
-
-app.get("/post", async (req, res) => {
-  try {
     // Read the from parameter from the query string
     const fromTimestamp = req.query.from;
 
@@ -45,6 +29,23 @@ app.get("/post", async (req, res) => {
   }
 });
 
+app.get("/post/:uuid", async (req, res) => {
+  try {
+    const post = await db.post.findFirstOrThrow({
+      where: {
+        id: req.params.uuid,
+        userId: req.user.id,
+      },
+      include: {
+        comments: true,
+      },
+    });
+
+    return res.status(200).json(post);
+  } catch (e) {
+    return res.status(400).json({ message: "Not found" });
+  }
+});
 
 app.post(
   "/post",
