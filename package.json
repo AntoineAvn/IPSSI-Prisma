@@ -5,17 +5,21 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^4.9.0",
+    "@types/lodash.merge": "^4.6.7",
     "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-validator": "^6.14.3",
     "jsonwebtoken": "^9.0.0",
+    "lodash.merge": "^4.6.2",
     "puppeteer": "^19.6.3"
   },
   "devDependencies": {

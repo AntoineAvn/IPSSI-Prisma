@@ -2,6 +2,8 @@ import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken'
 import * as bcrypt from 'bcrypt'
 
+import config from "../config" //import env/serv:port
+
 export interface JWTUser {
   id: string;
   username: string;
@@ -11,7 +13,7 @@ export const createJWT = (user: JWTUser) => {
   const token = jwt.sign({
     id: user.id,
     name: user.username
-  }, (process.env.JWT_SECRET as string))
+  }, (config.secrets.jwt as string))
   return token
 }
 
@@ -29,7 +31,7 @@ export const protect: RequestHandler = (req, res, next) => {
   }
 
   try {
-    const payload = jwt.verify(token, (process.env.JWT_SECRET as string)) as JWTUser
+    const payload = jwt.verify(token, (config.secrets.jwt as string)) as JWTUser
     req.user = payload
     return next()
   } catch(e) {

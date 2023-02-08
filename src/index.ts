@@ -6,6 +6,8 @@ import todoListRouter from './routes/todoList'
 import todoItemRouter from './routes/todoItem'
 import { createNewUser, signIn } from './handlers/user'
 
+import config from "./config" //import env/serv:port
+
 dotenv.config()
 
 const app = express()
@@ -25,6 +27,6 @@ app.use('/api', protect, [
 app.post('/sign-up', createNewUser)
 app.post('/sign-in', signIn)
 
-app.listen(1234, () => {
-  console.log('Listening on port 1234')
+app.listen(config.port, () => {
+  console.log(`Listening on port ${config.port} on ${config.stage} environnement`)
 })
