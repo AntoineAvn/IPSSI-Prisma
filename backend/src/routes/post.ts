@@ -110,11 +110,6 @@ app.put(
 
 app.delete("/post/:uuid", async (req, res) => {
   try {
-    await db.post.delete({
-      where: {
-        id: req.params.uuid,
-      },
-    });
     const post = await db.post.findUnique({ where: { id: req.params?.uuid } });
 
     // Check if the post exists
@@ -126,6 +121,11 @@ app.delete("/post/:uuid", async (req, res) => {
     if (post.userId !== req.user.id) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+    await db.post.delete({
+      where: {
+        id: req.params.uuid,
+      },
+    });
     return res
       .status(200)
       .json({ message: `Succesfully deleted ${req.params.uuid}` });
