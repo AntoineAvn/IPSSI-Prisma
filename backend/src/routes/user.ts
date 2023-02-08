@@ -49,4 +49,42 @@ app.put("/user", async (req, res) => {
   }
 });
 
+app.delete("/user", async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    const userToDelete = await db.user.findUnique({
+      where: {
+        id: req.body.id,
+      },
+    });
+    const user = await db.user.findUnique({
+      where: {
+        id: req.user.id,
+      },
+    });
+    if (!userToDelete) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    if (req.user.id !== userToDelete.id && user?.isAdmin === false) {
+      return res
+        .status(403)
+        .json({ message: "You are not allowed to delete this user" });
+    }
+    await db.user.delete({
+      where: {
+        id: userToDelete.id,
+      },
+    });
+    return res
+      .status(200)
+      .json({ message: `Successfully deleted user with id ${userToDelete.id}` });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).json({ message: "An error ocurred" });
+  }
+});
+
+
 export default app;
