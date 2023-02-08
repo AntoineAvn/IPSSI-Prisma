@@ -7,12 +7,15 @@ const app = Router();
 app.get("/posts", async (req, res) => {
   try {
     // Read the from parameter from the query string
-    const fromTimestamp = req.query.from;
+    const fromTimestamp = Number(req.query.from) * 1000;
 
     // Query the database using Prisma's ORM
     const posts = await db.post.findMany({
       where: {
-        createdAt: { gt: fromTimestamp },
+        createdAt: {
+          // If the from parameter is present, use it to filter the posts
+          gte: fromTimestamp ? new Date(fromTimestamp) : undefined,
+        },
         userId: req.user.id,
       },
       include: {

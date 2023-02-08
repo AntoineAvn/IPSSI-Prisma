@@ -19,7 +19,7 @@ const isUsersPost: RequestHandler = async (req, res, next) => {
     console.log(e)
     return res.status(400).json({ message: 'You are not the owner' })
   }
-} 
+}
 
 router.post(
   '/comment',
@@ -44,26 +44,49 @@ router.post(
 )
 
 router.put(
-  '/comment/:uuid',
+  "/comment/:uuid",
   isUsersPost,
-  body('description').isLength({ min: 1 }),
+  body("description").isLength({ min: 1 }),
   async (req, res) => {
     try {
-      validationResult(req).throw()
+      validationResult(req).throw();
+
+      // Find the comment with the given ID
+      const comment = await db.comment.findFirst({
+        where: {
+          id: req.params?.uuid,
+        },
+      });
+
+      // Check if the comment exists
+      if (!comment) {
+        return res.status(400).json({ message: "Comment not found" });
+      }
+
+      // Check if the comment belongs to the user who is making the request
+      // if (comment.userId !== req.user.id) {
+      //   return res
+      //     .status(403)
+      //     .json({ message: "You are not allowed to modify this comment" });
+      // }
+
+      // Update the comment
       const updatedComment = await db.comment.update({
         where: {
-          id: req.params?.uuid
+          id: req.params?.uuid,
         },
         data: {
-          description: req.body.description
-        }
-      })
-      res.status(200).json(updatedComment)
-    } catch(e) {
-      return res.status(400).json({ message: e || 'Error during update'})
+          description: req.body.description,
+        },
+      });
+
+      return res.status(200).json(updatedComment);
+    } catch (e) {
+      return res.status(400).json({ message: e || "Error during update" });
     }
   }
-)
+);
+
 
 router.delete(
   '/comment/:uuid',
