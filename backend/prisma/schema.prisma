@@ -36,4 +36,5 @@ model User {
   name     String    @default("Default user name")
   posts    Post[]
   comments Comment[]
+  isAdmin  Boolean   @default(false)
 }

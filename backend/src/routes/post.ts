@@ -80,6 +80,7 @@ app.put(
 
       // Retrieve the post from the database
       const post = await db.post.findUnique({ where: { id: req.params?.uuid } });
+      const user = await db.user.findUnique({ where: { id: req.user.id } });
 
       // Check if the post exists
       if (!post) {
@@ -87,7 +88,7 @@ app.put(
       }
 
       // Check if the user is authorized to update the post
-      if (post.userId !== req.user.id) {
+      if (post.userId !== req.user.id || user?.isAdmin === false) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
@@ -111,6 +112,7 @@ app.put(
 app.delete("/post/:uuid", async (req, res) => {
   try {
     const post = await db.post.findUnique({ where: { id: req.params?.uuid } });
+    const user = await db.user.findUnique({ where: { id: req.user.id } });
 
     // Check if the post exists
     if (!post) {
@@ -118,7 +120,7 @@ app.delete("/post/:uuid", async (req, res) => {
     }
 
     // Check if the user is authorized to delete the post
-    if (post.userId !== req.user.id) {
+    if (post.userId !== req.user.id || user?.isAdmin === false) {
       return res.status(401).json({ message: "Unauthorized" });
     }
     await db.post.delete({

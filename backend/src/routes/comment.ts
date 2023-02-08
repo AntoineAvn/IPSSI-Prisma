@@ -58,6 +58,11 @@ router.put(
           id: req.params?.uuid,
         },
       });
+      const user = await db.user.findFirst({
+        where: {
+          id: req.user.id
+        }
+      })
 
       // Check if the comment exists
       if (!comment) {
@@ -65,7 +70,7 @@ router.put(
       }
 
       // Check if the comment belongs to the user who is making the request
-      if (comment.userId !== req.user.id) {
+      if (comment.userId !== req.user.id || user?.isAdmin === false) {
         return res
           .status(403)
           .json({ message: "You are not allowed to modify this comment" });
@@ -100,10 +105,15 @@ router.delete(
           id: req.params?.uuid,
         },
       });
+      const user = await db.user.findFirst({
+        where: {
+          id: req.user.id
+        }
+      })
       if (!comment) {
         return res.status(400).json({ message: "Comment not found" });
       }
-      if (comment.userId !== req.user.id) {
+      if (comment.userId !== req.user.id || user?.isAdmin === false) {
         return res
           .status(403)
           .json({ message: "You are not allowed to delete this comment" });
