@@ -72,7 +72,7 @@ router.post(
   // Validate the postId field in the request body
   body('postId').isUUID(),
   // Validate the description field in the request body
-  body('description').isString(),
+  body("description").exists().isString().notEmpty(),
   // Call the isAdminOrUserPost middleware function
   isAdminOrUserPost,
   async (req, res) => {
@@ -105,7 +105,7 @@ router.put(
   // Call the isAdminOrUserPost middleware function
   isAdminOrUserPost,
   // Validate the description field in the request body
-  body("description").isLength({ min: 1 }),
+  body("description").exists().isString().notEmpty(),
   async (req, res) => {
     try {
       // Check if there are any validation errors

@@ -1,6 +1,8 @@
 import express from "express";
 import db from "../db";
 
+import { body, validationResult } from "express-validator";
+
 const app = express.Router();
 
 const userExists: express.RequestHandler = async (req, res, next) => {
@@ -65,8 +67,11 @@ app.get("/user", userExists, async (req, res) => {
   }
 });
 
-app.put("/user", userExists, isAdminOrUser, async (req, res) => {
+app.put("/user", 
+body("name").exists().isString().notEmpty(),
+userExists, isAdminOrUser, async (req, res) => {
   try {
+    validationResult(req).throw();
     if (!req.body.name) {
       return res.status(400).json({ message: "Invalid body provided" });
     }
