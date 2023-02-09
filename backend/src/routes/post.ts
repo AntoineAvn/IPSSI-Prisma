@@ -177,7 +177,9 @@ app.put(
       validationResult(req).throw();
 
       // Retrieve the post from the database
-      const post = await db.post.findUnique({ where: { id: req.params?.uuid } });
+      const post = await db.post.findUnique({
+        where: { id: req.params?.uuid },
+      });
 
       // Retrieve the user from the database
       const user = await db.user.findUnique({ where: { id: req.user.id } });
@@ -206,9 +208,9 @@ app.put(
   }
 );
 
-
 // Route for deleting a post
-app.delete("/post/:uuid",
+app.delete(
+  "/post/:uuid",
   // Middleware to check if the post exists
   postexists,
   // Middleware to check if the user making the request is either an admin or the author of the post
@@ -216,7 +218,9 @@ app.delete("/post/:uuid",
   async (req, res) => {
     try {
       // Retrieve the post from the database
-      const post = await db.post.findUnique({ where: { id: req.params?.uuid } });
+      const post = await db.post.findUnique({
+        where: { id: req.params?.uuid },
+      });
       // Retrieve the user from the database
       const user = await db.user.findUnique({ where: { id: req.user.id } });
       // Delete the post from the database

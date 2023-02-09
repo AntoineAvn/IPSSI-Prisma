@@ -82,10 +82,13 @@ app.get("/user", userExists, async (req, res) => {
 });
 
 // Endpoint to update the user data
-app.put("/user",
+app.put(
+  "/user",
   // Validate that the "name" field exists and is a non-empty string
   body("name").exists().isString().notEmpty(),
-  userExists, isAdminOrUser, async (req, res) => {
+  userExists,
+  isAdminOrUser,
+  async (req, res) => {
     try {
       // Throw an error if validation fails
       validationResult(req).throw();
@@ -101,7 +104,7 @@ app.put("/user",
       });
 
       // Prevent administrators from updating their name
-      if(user?.isAdmin) {
+      if (user?.isAdmin) {
         return res.status(400).json({ message: "You can't do this" });
       }
 
@@ -128,10 +131,11 @@ app.put("/user",
       console.error(e);
       return res.status(400).json({ message: "An error ocurred" });
     }
-  });
+  }
+);
 
 // Endpoint to delete a user
-app.delete("/user", userExists, isAdminOrUser ,async (req, res) => {
+app.delete("/user", userExists, isAdminOrUser, async (req, res) => {
   try {
     // Check if the user is authenticated
     if (!req.user) {
@@ -152,7 +156,9 @@ app.delete("/user", userExists, isAdminOrUser ,async (req, res) => {
     // Return a success message
     return res
       .status(200)
-      .json({ message: `Successfully deleted user with id ${userToDelete?.id}` });
+      .json({
+        message: `Successfully deleted user with id ${userToDelete?.id}`,
+      });
   } catch (e) {
     console.error(e);
     return res.status(400).json({ message: "An error ocurred" });
