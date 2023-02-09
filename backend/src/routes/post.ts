@@ -88,7 +88,7 @@ app.get("/posts", async (req, res) => {
   }
 });
 
-app.get("/post/:uuid", 
+app.get("/post/:uuid",
 postexists,
 //Check uuid param
 check("uuid").isUUID(),
@@ -124,6 +124,7 @@ app.post(
       const createdpost = await db.post.create({
         data: {
           name: req.body.name,
+          content: req.body.content,
           userId: req.user.id,
         },
       });
