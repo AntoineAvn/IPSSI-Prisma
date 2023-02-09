@@ -1,5 +1,10 @@
+// Description: This file contains the routes for the comment model
 import { RequestHandler, Router } from 'express'
+
+// Import the db object from the db.ts file
 import db from '../db'
+
+// Import the body and validationResult functions from the express-validator package
 import { body, validationResult } from 'express-validator'
 
 // Create a new Router object
