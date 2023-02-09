@@ -29,79 +29,87 @@ $ pnpm prisma studio
 ```
 
 ## API Endpoint
-/Sign-up
+/Sign-up (POST)
 
 ```json
 {
-    "username": "Mario",
-    "password": "azert",
+    "username": "John",
+    "password": "mypassword",
     "name": "Jean", //optional
     "isAdmin": true //optional (by default: false)
 }
 ```
 
-/Sign-in
+/Sign-in (POST)
 
 ```json
-mettre le json body
+{
+    "username": "John",
+    "password": "mypassword"
+}
 ```
 
-/api/user
+/api/user (GET user info from token auth)
+
+/api/user (PUT)
 
 ```json
-mettre le json body
+{
+    "name": "Johnny",
+    "username": "John"
+}
 ```
 
-/api/user
+/api/user (DELETE)
 
 ```json
-mettre le json body
+{
+    "id": "4805eef2-4647-4135-a9e9-8e142b357e85"
+}
 ```
 
-/api/posts
+/api/posts (GET)
+
+```bash
+Filter use: posts?from={timestamp}
+```
+
+/api/post/:uuid (GET)
+
+/api/post (POST)
 
 ```json
-mettre le json body
+{
+    "name": "Title of post",
+    "content": "Content of post" //optional
+}
 ```
 
-/api/post/:uuid
+/api/post/:uuid (PUT)
 
 ```json
-mettre le json body
+{
+    "name": "Title of post",
+    "content": "Content of post" // optional
+}
 ```
 
-/api/post
+/api/post/:uuid (DELETE)
+
+/api/post/:uuid/comment (POST)
 
 ```json
-mettre le json body
+{
+    "description": "description of comment"
+}
 ```
 
-/api/post/:uuid
+/api/:uuid/comment/:uuid (PUT)
 
 ```json
-mettre le json body
+{
+    "description": "description of comment"
+}
 ```
 
-/api/post/:uuid
-
-```json
-mettre le json body
-```
-
-/api/post/:uuid/comment
-
-```json
-mettre le json body
-```
-
-/api/:uuid/comment/:uuid
-
-```json
-mettre le json body
-```
-
-/api/:uuid/comment/:uuid
-
-```json
-mettre le json body
-```
+/api/:uuid/comment/:uuid (DELETE)
