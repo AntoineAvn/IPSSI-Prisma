@@ -60,7 +60,8 @@ const isAdminOrUser: express.RequestHandler = async (req, res, next) => {
 };
 
 // Get endpoint to retrieve the user data
-app.get("/user", userExists, async (req, res) => {
+app.get("/user", 
+async (req, res) => {
   try {
     // Get the user data from the database using the user id from the request object
     const user = await db.user.findUnique({

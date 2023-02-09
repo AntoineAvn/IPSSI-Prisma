@@ -67,14 +67,10 @@ const isAdminOrUserPost: RequestHandler = async (req, res, next) => {
 // Endpoint for creating a new comment
 router.post(
   "/comment",
-  // Call the commentexists middleware function
-  commentexists,
   // Validate the postId field in the request body
   body("postId").isUUID(),
   // Validate the description field in the request body
   body("description").exists().isString().notEmpty(),
-  // Call the isAdminOrUserPost middleware function
-  isAdminOrUserPost,
   async (req, res) => {
     try {
       // Check if there are any validation errors

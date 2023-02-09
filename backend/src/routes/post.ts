@@ -91,7 +91,7 @@ app.get("/posts", async (req, res) => {
 app.get("/post/:uuid", 
 postexists,
 //Check uuid param
- check("uuid").isUUID(),
+check("uuid").isUUID(),
  async (req, res) => {
   try {
     // Find the post with the specified ID
