@@ -73,30 +73,6 @@ app.delete("/user", async (req, res) => {
         .json({ message: "You are not allowed to delete this user" });
     }
 
-    const posts = await db.post.findMany({
-      where: {
-        userId: userToDelete.id,
-      },
-    });
-    for (const post of posts) {
-      await db.post.delete({
-        where: {
-          id: post.id,
-        },
-      });
-    }
-    const comments = await db.comment.findMany({
-      where: {
-        userId: userToDelete.id,
-      },
-    });
-    for (const comment of comments) {
-      await db.comment.delete({
-        where: {
-          id: comment.id,
-        },
-      });
-    }
     await db.user.delete({
       where: {
         id: userToDelete.id,
