@@ -112,4 +112,4 @@ Filter use: posts?from={timestamp}
 }
 ```
 
-![#f03c15] /api/:uuid/comment/:uuid (DELETE) `#f03c15`
+- ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) /api/:uuid/comment/:uuid (DELETE)
