@@ -27,3 +27,10 @@ Launch Prisma studio
 ```bash
 $ pnpm prisma studio
 ```
+
+## API Endpoint
+Sign-up
+
+```bash
+$ http://localhost:1234/sign-up
+```
