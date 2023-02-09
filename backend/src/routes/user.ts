@@ -11,7 +11,7 @@ const userExists: express.RequestHandler = async (req, res, next) => {
     // Get the user from the database using the UUID from the request parameters
     const user = await db.user.findUnique({
       where: {
-        id: req.params?.uuid,
+        id: req.user.id,
       },
     });
     // If user is not found, throw an error
@@ -40,15 +40,13 @@ const isAdminOrUser: express.RequestHandler = async (req, res, next) => {
     if (user?.isAdmin) {
       return next();
     }
-    // Check if user is the owner of the resource
-    const isOwner = await db.user.findUnique({
-      where: {
-        id: req.user.id,
-      },
-    });
+
     // If user is not the owner, throw an error
-    if (!isOwner) {
-      throw new Error("You should not be here");
+
+    if (user?.id !== req.body.id) {
+      return res
+        .status(401)
+        .json({ message: "You can't delete an other user than you." });
     }
     // Call the next middleware or handler
     return next();
@@ -60,8 +58,7 @@ const isAdminOrUser: express.RequestHandler = async (req, res, next) => {
 };
 
 // Get endpoint to retrieve the user data
-app.get("/user", 
-async (req, res) => {
+app.get("/user", async (req, res) => {
   try {
     // Get the user data from the database using the user id from the request object
     const user = await db.user.findUnique({
@@ -119,15 +116,10 @@ app.put(
         },
       });
 
-      // Find all posts associated with the user
-      db.post.findMany({
-        where: {
-          userId: req.user.id,
-        },
-      });
-
       // Return the updated user information
-      return res.status(200).json(updatedUser);
+      return res
+        .status(200)
+        .json(`Name ${req.body.name} was modified successfully`);
     } catch (e) {
       console.error(e);
       return res.status(400).json({ message: "An error ocurred" });
@@ -155,11 +147,9 @@ app.delete("/user", userExists, isAdminOrUser, async (req, res) => {
       },
     });
     // Return a success message
-    return res
-      .status(200)
-      .json({
-        message: `Successfully deleted user with id ${userToDelete?.id}`,
-      });
+    return res.status(200).json({
+      message: `Successfully deleted user with id ${userToDelete?.id}`,
+    });
   } catch (e) {
     console.error(e);
     return res.status(400).json({ message: "An error ocurred" });
