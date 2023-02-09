@@ -112,4 +112,4 @@ Filter use: posts?from={timestamp}
 }
 ```
 
-/api/:uuid/comment/:uuid (DELETE)
+- /api/:uuid/comment/:uuid (DELETE)
