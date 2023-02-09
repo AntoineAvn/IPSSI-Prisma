@@ -17,6 +17,7 @@ model Post {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   createdAt DateTime  @default(now())
+  content   String
 }
 
 model Comment {
