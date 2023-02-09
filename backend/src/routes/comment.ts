@@ -20,34 +20,37 @@ const commentexists: RequestHandler = async (req, res, next) => {
     return res.status(400).json({ message: 'Comment not found' })
   }
 }
-
-const isUsersPost: RequestHandler = async (req, res, next) => {
+const isAdminOrUserPost: RequestHandler = async (req, res, next) => {
   try {
     const user = await db.user.findFirst({
       where: {
         id: req.user.id
       }
     })
-    const post = await db.post.findFirst({
+    if (user?.isAdmin) {
+      return next()
+    }
+    const isOwner = await db.post.findFirstOrThrow({
       where: {
-        id: req.params.postId
+        userId: req.user.id
       }
     })
-    if ( req.user.id !== post?.userId  && user?.isAdmin === false) {
+    if (!isOwner) {
       throw new Error('You should not be here')
     }
     return next()
   } catch(e) {
     console.log(e)
-    return res.status(400).json({ message: 'You are not the owner' })
+    return res.status(400).json({ message: 'You are not the admin or owner' })
   }
 }
+
 
 router.post(
   '/comment',
   body('postId').isUUID(),
   body('description').isString(),
-  isUsersPost,
+  isAdminOrUserPost,
   async (req, res) => {
     try {
       validationResult(req).throw()
@@ -68,7 +71,7 @@ router.post(
 
 router.put(
   "/comment/:uuid",
-  isUsersPost,
+  isAdminOrUserPost,
   body("description").isLength({ min: 1 }),
   async (req, res) => {
     try {
@@ -118,7 +121,7 @@ router.put(
 
 router.delete(
   '/comment/:uuid',
-  isUsersPost,
+  isAdminOrUserPost,
   async (req, res) => {
     try {
       const deletedId = req.params.uuid
