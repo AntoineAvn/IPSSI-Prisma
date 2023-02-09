@@ -29,7 +29,7 @@ $ pnpm prisma studio
 ```
 
 ## API Endpoint
-/Sign-up (POST)
+- (POST) /Sign-up
 
 ```json
 {
@@ -40,7 +40,7 @@ $ pnpm prisma studio
 }
 ```
 
-/Sign-in (POST)
+- (POST) /Sign-in
 
 ```json
 {
@@ -49,9 +49,9 @@ $ pnpm prisma studio
 }
 ```
 
-/api/user (GET user info from token auth)
+- (GET) /api/user
 
-/api/user (PUT)
+- (PUT) /api/user
 
 ```json
 {
@@ -60,7 +60,7 @@ $ pnpm prisma studio
 }
 ```
 
-/api/user (DELETE)
+- (DELETE) /api/user
 
 ```json
 {
@@ -68,15 +68,15 @@ $ pnpm prisma studio
 }
 ```
 
-/api/posts (GET)
+- (GET) /api/posts
 
 ```bash
 Filter use: posts?from={timestamp}
 ```
 
-/api/post/:uuid (GET)
+- (GET) /api/post/:uuid
 
-/api/post (POST)
+- (POST) /api/post
 
 ```json
 {
@@ -85,7 +85,7 @@ Filter use: posts?from={timestamp}
 }
 ```
 
-/api/post/:uuid (PUT)
+- (PUT) /api/post/:uuid
 
 ```json
 {
@@ -94,17 +94,9 @@ Filter use: posts?from={timestamp}
 }
 ```
 
-/api/post/:uuid (DELETE)
+- (DELETE) /api/post/:uuid
 
-/api/post/:uuid/comment (POST)
-
-```json
-{
-    "description": "description of comment"
-}
-```
-
-/api/:uuid/comment/:uuid (PUT)
+- (POST) /api/post/:uuid/comment
 
 ```json
 {
@@ -112,4 +104,12 @@ Filter use: posts?from={timestamp}
 }
 ```
 
-- ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) /api/:uuid/comment/:uuid (DELETE)
+- (PUT) /api/:uuid/comment/:uuid
+
+```json
+{
+    "description": "description of comment"
+}
+```
+
+- (DELETE) /api/:uuid/comment/:uuid 
