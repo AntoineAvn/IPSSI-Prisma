@@ -1,5 +1,5 @@
 import { Request, RequestHandler, Response, Router } from "express";
-import { body, validationResult } from "express-validator";
+import { body, check, validationResult } from "express-validator";
 import db from "../db";
 
 const app = Router();
@@ -74,7 +74,11 @@ app.get("/posts", async (req, res) => {
   }
 });
 
-app.get("/post/:uuid", postexists, async (req, res) => {
+app.get("/post/:uuid", 
+postexists,
+//Check uuid param
+ check("uuid").isUUID(),
+ async (req, res) => {
   try {
     const post = await db.post.findFirstOrThrow({
       where: {
@@ -118,6 +122,8 @@ app.put(
   postexists,
   isAdminOrUserPost,
   body("name").exists().isString().notEmpty(),
+  //Check uuid param
+  check("uuid").isUUID(),
   async (req, res) => {
     try {
       validationResult(req).throw();
@@ -146,7 +152,11 @@ app.put(
 );
 
 
-app.delete("/post/:uuid", postexists, isAdminOrUserPost, async (req, res) => {
+app.delete("/post/:uuid", 
+postexists, isAdminOrUserPost, 
+//Check uuid param
+check("uuid").isUUID(),
+async (req, res) => {
   try {
     const post = await db.post.findUnique({ where: { id: req.params?.uuid } });
     const user = await db.user.findUnique({ where: { id: req.user.id } });

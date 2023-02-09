@@ -1,6 +1,6 @@
 import { RequestHandler, Router } from 'express'
 import db from '../db'
-import { body, validationResult } from 'express-validator'
+import { body, check, validationResult } from 'express-validator'
 
 // Create a new Router object
 const router = Router()
@@ -101,6 +101,8 @@ router.put(
   isAdminOrUserPost,
   // Validate the description field in the request body
   body("description").exists().isString().notEmpty(),
+  //Check uuid param
+  check("uuid").isUUID(),
   async (req, res) => {
     try {
       // Check if there are any validation errors
@@ -140,6 +142,8 @@ router.delete(
   commentexists,
   // Call the isAdminOrUserPost middleware function
   isAdminOrUserPost,
+  //Check uuid param
+   check("uuid").isUUID(),
   async (req, res) => {
     try {
       // Find the comment with the given ID
