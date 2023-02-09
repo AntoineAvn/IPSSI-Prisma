@@ -112,4 +112,4 @@ Filter use: posts?from={timestamp}
 }
 ```
 
-- /api/:uuid/comment/:uuid (DELETE)
+![#f03c15] /api/:uuid/comment/:uuid (DELETE) `#f03c15`
