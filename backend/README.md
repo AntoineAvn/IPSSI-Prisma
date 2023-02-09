@@ -29,8 +29,79 @@ $ pnpm prisma studio
 ```
 
 ## API Endpoint
-Sign-up
+/Sign-up
 
-```bash
-$ http://localhost:1234/sign-up
+```json
+{
+    "username": "Mario",
+    "password": "azert",
+    "name": "Jean", //optional
+    "isAdmin": true //optional (by default: false)
+}
+```
+
+/Sign-in
+
+```json
+mettre le json body
+```
+
+/api/user
+
+```json
+mettre le json body
+```
+
+/api/user
+
+```json
+mettre le json body
+```
+
+/api/posts
+
+```json
+mettre le json body
+```
+
+/api/post/:uuid
+
+```json
+mettre le json body
+```
+
+/api/post
+
+```json
+mettre le json body
+```
+
+/api/post/:uuid
+
+```json
+mettre le json body
+```
+
+/api/post/:uuid
+
+```json
+mettre le json body
+```
+
+/api/post/:uuid/comment
+
+```json
+mettre le json body
+```
+
+/api/:uuid/comment/:uuid
+
+```json
+mettre le json body
+```
+
+/api/:uuid/comment/:uuid
+
+```json
+mettre le json body
 ```
