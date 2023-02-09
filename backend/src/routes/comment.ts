@@ -4,19 +4,36 @@ import { body, validationResult } from 'express-validator'
 
 const router = Router()
 
-const isUsersPost: RequestHandler = async (req, res, next) => {
+const commentexists: RequestHandler = async (req, res, next) => {
   try {
-    const isOwner = await db.post.findFirstOrThrow({
+    const comment = await db.comment.findFirst({
       where: {
-        userId: req.user.id
+        id: req.params?.uuid
       }
     })
+    if (!comment) {
+      throw new Error('Comment not found')
+    }
+    return next()
+  } catch(e) {
+    console.log(e)
+    return res.status(400).json({ message: 'Comment not found' })
+  }
+}
+
+const isUsersPost: RequestHandler = async (req, res, next) => {
+  try {
     const user = await db.user.findFirst({
       where: {
         id: req.user.id
       }
     })
-    if (!isOwner && user?.isAdmin === false) {
+    const post = await db.post.findFirst({
+      where: {
+        id: req.params.postId
+      }
+    })
+    if ( req.user.id !== post?.userId  && user?.isAdmin === false) {
       throw new Error('You should not be here')
     }
     return next()
