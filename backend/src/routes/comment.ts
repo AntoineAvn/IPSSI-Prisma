@@ -4,24 +4,6 @@ import { body, validationResult } from 'express-validator'
 
 const router = Router()
 
-const isAdmin: RequestHandler = async (req, res, next) => {
-  try {
-    const user = await db.user.findFirst({
-      where: {
-        id: req.user.id
-      }
-    })
-    if (!user?.isAdmin) {
-      throw new Error('You should not be here')
-    }
-    return next()
-  } catch(e) {
-    console.log(e)
-    return res.status(400).json({ message: 'You are not the admin' })
-  }
-}
-
-
 const isUsersPost: RequestHandler = async (req, res, next) => {
   try {
     const isOwner = await db.post.findFirstOrThrow({
@@ -29,7 +11,12 @@ const isUsersPost: RequestHandler = async (req, res, next) => {
         userId: req.user.id
       }
     })
-    if (!isOwner) {
+    const user = await db.user.findFirst({
+      where: {
+        id: req.user.id
+      }
+    })
+    if (!isOwner && user?.isAdmin === false) {
       throw new Error('You should not be here')
     }
     return next()
