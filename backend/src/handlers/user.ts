@@ -13,7 +13,8 @@ export const createNewUser: RequestHandler = async (req, res) => {
     const user = await db.user.create({
       data: {
         username: req.body.username,
-        password: hash
+        password: hash,
+        isAdmin: req.body.isAdmin
       }
     })
   
