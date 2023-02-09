@@ -71,12 +71,12 @@ router.post(
 
 router.put(
   "/comment/:uuid",
+  commentexists,
   isAdminOrUserPost,
   body("description").isLength({ min: 1 }),
   async (req, res) => {
     try {
       validationResult(req).throw();
-
       // Find the comment with the given ID
       const comment = await db.comment.findFirst({
         where: {
@@ -85,22 +85,13 @@ router.put(
       });
       const user = await db.user.findFirst({
         where: {
-          id: req.user.id
-        }
-      })
+          id: req.user.id,
+        },
+      });
 
-      // Check if the comment exists
-      if (!comment) {
-        return res.status(400).json({ message: "Comment not found" });
+      if (user?.isAdmin) {
+        return res.status(400).json({ message: "You are can't modify this" });
       }
-
-      // Check if the comment belongs to the user who is making the request
-      if (comment.userId !== req.user.id && user?.isAdmin === false) {
-        return res
-          .status(403)
-          .json({ message: "You are not allowed to modify this comment" });
-      }
-
       // Update the comment
       const updatedComment = await db.comment.update({
         where: {
@@ -110,7 +101,6 @@ router.put(
           description: req.body.description,
         },
       });
-
       return res.status(200).json(updatedComment);
     } catch (e) {
       return res.status(400).json({ message: e || "Error during update" });
@@ -121,6 +111,7 @@ router.put(
 
 router.delete(
   '/comment/:uuid',
+  commentexists,
   isAdminOrUserPost,
   async (req, res) => {
     try {
@@ -130,19 +121,6 @@ router.delete(
           id: req.params?.uuid,
         },
       });
-      const user = await db.user.findFirst({
-        where: {
-          id: req.user.id
-        }
-      })
-      if (!comment) {
-        return res.status(400).json({ message: "Comment not found" });
-      }
-      if (comment.userId !== req.user.id && user?.isAdmin === false) {
-        return res
-          .status(403)
-          .json({ message: "You are not allowed to delete this comment" });
-      }
       await db.comment.delete({
         where: {
           id: deletedId
