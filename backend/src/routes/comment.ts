@@ -70,7 +70,7 @@ router.put(
       }
 
       // Check if the comment belongs to the user who is making the request
-      if (comment.userId !== req.user.id || user?.isAdmin === false) {
+      if (comment.userId !== req.user.id && user?.isAdmin === false) {
         return res
           .status(403)
           .json({ message: "You are not allowed to modify this comment" });
@@ -113,7 +113,7 @@ router.delete(
       if (!comment) {
         return res.status(400).json({ message: "Comment not found" });
       }
-      if (comment.userId !== req.user.id || user?.isAdmin === false) {
+      if (comment.userId !== req.user.id && user?.isAdmin === false) {
         return res
           .status(403)
           .json({ message: "You are not allowed to delete this comment" });

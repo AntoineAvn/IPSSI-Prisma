@@ -88,7 +88,7 @@ app.put(
       }
 
       // Check if the user is authorized to update the post
-      if (post.userId !== req.user.id || user?.isAdmin === false) {
+      if (post.userId !== req.user.id && user?.isAdmin === false) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
@@ -120,7 +120,7 @@ app.delete("/post/:uuid", async (req, res) => {
     }
 
     // Check if the user is authorized to delete the post
-    if (post.userId !== req.user.id || user?.isAdmin === false) {
+    if (post.userId !== req.user.id && user?.isAdmin === false) {
       return res.status(401).json({ message: "Unauthorized" });
     }
     await db.post.delete({
