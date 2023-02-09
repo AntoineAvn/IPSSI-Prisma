@@ -156,6 +156,7 @@ app.put(
   isAdminOrUserPost,
   // Middleware to validate the request body
   body("name").exists().isString().notEmpty(),
+  body("content").isString(),
   //Check uuid param
   check("uuid").isUUID(),
   async (req, res) => {
@@ -183,6 +184,7 @@ app.put(
         },
         data: {
           name: req.body.name,
+          content: req.body.content
         },
       });
 
