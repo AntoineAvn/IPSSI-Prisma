@@ -41,12 +41,15 @@ const isAdminOrUser: express.RequestHandler = async (req, res, next) => {
       return next();
     }
 
-    // If user is not the owner, throw an error
+    if (!req.body.id) {
+      return res.status(400).json({ message: "Please specify an id user." });
+    }
 
+    // If user is not the owner, throw an error
     if (user?.id !== req.body.id) {
-      return res
-        .status(401)
-        .json({ message: "You can't delete an other user than you." });
+      return res.status(401).json({
+        message: "You can't delete or modify an other user than you.",
+      });
     }
     // Call the next middleware or handler
     return next();
@@ -68,6 +71,10 @@ app.get("/user", async (req, res) => {
       select: {
         id: true,
         username: true,
+        name: true,
+        posts: true,
+        comments: true,
+        isAdmin: true,
       },
     });
     // Return the user data in the response
@@ -113,6 +120,7 @@ app.put(
         },
         data: {
           name: req.body.name,
+          username: req.body.username || undefined,
         },
       });
 

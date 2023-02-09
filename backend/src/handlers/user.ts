@@ -14,6 +14,7 @@ export const createNewUser: RequestHandler = async (req, res) => {
       data: {
         username: req.body.username,
         password: hash,
+        name: req.body.name,
         isAdmin: req.body.isAdmin
       }
     })

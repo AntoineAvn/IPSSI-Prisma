@@ -33,10 +33,10 @@ const commentexists: RequestHandler = async (req, res, next) => {
 };
 
 // Middleware function to check if the user is an admin or the owner of the post
-const isAdminOrUserPost: RequestHandler = async (req, res, next) => {
+const isAdminOrUserComment: RequestHandler = async (req, res, next) => {
   try {
     // Check if the user is an admin
-    const user = await db.user.findFirst({
+    const user = await db.user.findUnique({
       where: {
         id: req.user.id,
       },
@@ -46,14 +46,19 @@ const isAdminOrUserPost: RequestHandler = async (req, res, next) => {
       return next();
     }
     // Check if the user is the owner of the post
-    const isOwner = await db.post.findFirstOrThrow({
+    console.log(req.user.id, req.params?.Puuid);
+    const isOwner = await db.comment.findFirst({
       where: {
         userId: req.user.id,
+        postId: req.params?.Puuid,
+        id: req.params?.Cuuid,
       },
     });
     if (!isOwner) {
       // If the user isn't the owner of the post, throw an error
-      throw new Error("You should not be here");
+      return res.status(403).json({
+        message: "You can't modify or delete comments other than yours.",
+      });
     }
     // If the user is the owner of the post, call the next middleware function
     return next();
@@ -66,9 +71,9 @@ const isAdminOrUserPost: RequestHandler = async (req, res, next) => {
 
 // Endpoint for creating a new comment
 router.post(
-  "/comment",
+  "/post/:uuid/comment",
   // Validate the postId field in the request body
-  body("postId").isUUID(),
+  check("uuid").isUUID(),
   // Validate the description field in the request body
   body("description").exists().isString().notEmpty(),
   async (req, res) => {
@@ -79,7 +84,7 @@ router.post(
       const createdComment = await db.comment.create({
         data: {
           userId: req.user.id,
-          postId: req.body.postId,
+          postId: req.params?.uuid,
           description: req.body.description,
         },
       });
@@ -94,15 +99,16 @@ router.post(
 
 // Endpoint for modifying a comment
 router.put(
-  "/comment/:uuid",
+  "/post/:Puuid/comment/:Cuuid",
   // Call the commentexists middleware function
   commentexists,
   // Call the isAdminOrUserPost middleware function
-  isAdminOrUserPost,
-  // Validate the description field in the request body
+  isAdminOrUserComment, // Validate the description field in the request body
   body("description").exists().isString().notEmpty(),
   //Check uuid param
-  check("uuid").isUUID(),
+  check("Puuid").isUUID(),
+  check("Cuuid").isUUID(),
+
   async (req, res) => {
     try {
       // Check if there are any validation errors
@@ -120,7 +126,7 @@ router.put(
       // Update the comment
       const updatedComment = await db.comment.update({
         where: {
-          id: req.params?.uuid,
+          id: req.params?.Cuuid,
         },
         data: {
           description: req.body.description,
@@ -137,17 +143,18 @@ router.put(
 
 // Endpoint for deleting a comment
 router.delete(
-  "/comment/:uuid",
+  "/post/:Puuid/comment/:Cuuid",
   // Call the commentexists middleware function
   commentexists,
   // Call the isAdminOrUserPost middleware function
-  isAdminOrUserPost,
+  isAdminOrUserComment,
   //Check uuid param
-  check("uuid").isUUID(),
+  check("Puuid").isUUID(),
+  check("Cuuid").isUUID(),
   async (req, res) => {
     try {
       // Find the comment with the given ID
-      const deletedId = req.params.uuid;
+      const deletedId = req.params.Cuuid;
       // Delete the comment
       await db.comment.delete({
         where: {

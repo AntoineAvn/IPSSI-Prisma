@@ -31,7 +31,7 @@ const postexists: RequestHandler = async (req, res, next) => {
 const isAdminOrUserPost: RequestHandler = async (req, res, next) => {
   try {
     // Find the user with the given id
-    const user = await db.user.findFirst({
+    const user = await db.user.findUnique({
       where: {
         id: req.user.id,
       },
@@ -46,9 +46,16 @@ const isAdminOrUserPost: RequestHandler = async (req, res, next) => {
         userId: req.user.id,
       },
     });
+    if (!req.body.id) {
+      return res.status(400).json({ message: "Please provide an userId" });
+    }
     // If the user is not the owner, throw an error
-    if (!isOwner) {
-      throw new Error("You should not be here");
+    if (req.user.id !== req.body.id) {
+      return res
+        .status(400)
+        .json({
+          message: "You can't delete or modify an other post than yours.",
+        });
     }
     // If the user is the owner, move on to the next middleware
     return next();
@@ -72,7 +79,6 @@ app.get("/posts", async (req, res) => {
           // If the from parameter is present, use it to filter the posts
           gte: fromTimestamp ? new Date(fromTimestamp) : undefined,
         },
-        userId: req.user.id,
       },
       include: {
         comments: true,
@@ -88,34 +94,38 @@ app.get("/posts", async (req, res) => {
   }
 });
 
-app.get("/post/:uuid",
-postexists,
-//Check uuid param
-check("uuid").isUUID(),
- async (req, res) => {
-  try {
-    // Find the post with the specified ID
-    const post = await db.post.findFirstOrThrow({
-      where: {
-        id: req.params.uuid,
-        userId: req.user.id,
-      },
-      include: {
-        comments: true,
-      },
-    });
+app.get(
+  "/post/:uuid",
+  postexists,
+  //Check uuid param
+  check("uuid").isUUID(),
+  async (req, res) => {
+    try {
+      // Find the post with the specified ID
+      const post = await db.post.findUniqueOrThrow({
+        where: {
+          id: req.params.uuid,
+        },
+        include: {
+          comments: true,
+        },
+      });
 
-    return res.status(200).json(post);
-  } catch (e) {
-    return res.status(400).json({ message: "Not found" });
+      return res.status(200).json(post);
+    } catch (e) {
+      return res.status(400).json({ message: "Not found" });
+    }
   }
-});
+);
 
 // Route for creating a new post
 app.post(
   "/post",
   body("name").exists().isString().notEmpty(),
   async (req: Request, res: Response) => {
+    if (!req.body.name) {
+      return res.status(400).json({ message: "Please provide a title" });
+    }
     try {
       // Check if the request body is valid
       validationResult(req).throw();
@@ -124,7 +134,7 @@ app.post(
       const createdpost = await db.post.create({
         data: {
           name: req.body.name,
-          content: req.body.content,
+          content: req.body.content || undefined,
           userId: req.user.id,
         },
       });
