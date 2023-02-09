@@ -91,7 +91,7 @@ router.put(
       });
 
       if (user?.isAdmin) {
-        return res.status(400).json({ message: "You are can't modify this" });
+        return res.status(400).json({ message: "You can't modify this" });
       }
       // Update the comment
       const updatedComment = await db.comment.update({
