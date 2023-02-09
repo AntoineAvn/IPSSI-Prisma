@@ -7,7 +7,7 @@ interface IInput {
     className: string,
 }
 
-export default function Input({...props}: IInput) {
+export default function Input(props: IInput) {
     return (
         <input
             type={props.type}
