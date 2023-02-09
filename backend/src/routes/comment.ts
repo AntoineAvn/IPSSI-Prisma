@@ -48,6 +48,7 @@ const isAdminOrUserPost: RequestHandler = async (req, res, next) => {
 
 router.post(
   '/comment',
+  commentexists,
   body('postId').isUUID(),
   body('description').isString(),
   isAdminOrUserPost,

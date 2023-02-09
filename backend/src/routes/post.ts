@@ -4,6 +4,48 @@ import db from "../db";
 
 const app = Router();
 
+const postexists: RequestHandler = async (req, res, next) => {
+  try {
+    const post = await db.post.findFirst({
+      where: {
+        id: req.params?.uuid,
+      },
+    });
+    if (!post) {
+      throw new Error("Post not found");
+    }
+    return next();
+  } catch (e) {
+    console.log(e);
+    return res.status(400).json({ message: "Post not found" });
+  }
+};
+
+const isAdminOrUserPost: RequestHandler = async (req, res, next) => {
+  try {
+    const user = await db.user.findFirst({
+      where: {
+        id: req.user.id,
+      },
+    });
+    if (user?.isAdmin) {
+      return next();
+    }
+    const isOwner = await db.post.findFirstOrThrow({
+      where: {
+        userId: req.user.id,
+      },
+    });
+    if (!isOwner) {
+      throw new Error("You should not be here");
+    }
+    return next();
+  } catch (e) {
+    console.log(e);
+    return res.status(400).json({ message: "You are not the admin or owner" });
+  }
+};
+
 app.get("/posts", async (req, res) => {
   try {
     // Read the from parameter from the query string
@@ -32,7 +74,7 @@ app.get("/posts", async (req, res) => {
   }
 });
 
-app.get("/post/:uuid", async (req, res) => {
+app.get("/post/:uuid", postexists, async (req, res) => {
   try {
     const post = await db.post.findFirstOrThrow({
       where: {
@@ -73,6 +115,8 @@ app.post(
 
 app.put(
   "/post/:uuid",
+  postexists,
+  isAdminOrUserPost,
   body("name").exists().isString().notEmpty(),
   async (req, res) => {
     try {
@@ -82,16 +126,9 @@ app.put(
       const post = await db.post.findUnique({ where: { id: req.params?.uuid } });
       const user = await db.user.findUnique({ where: { id: req.user.id } });
 
-      // Check if the post exists
-      if (!post) {
-        return res.status(404).json({ message: "Post not found" });
+      if (user?.isAdmin) {
+        return res.status(401).json({ message: "You can't modify this" });
       }
-
-      // Check if the user is authorized to update the post
-      if (post.userId !== req.user.id && user?.isAdmin === false) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
       const updatedPost = await db.post.update({
         where: {
           id: req.params?.uuid,
@@ -109,20 +146,11 @@ app.put(
 );
 
 
-app.delete("/post/:uuid", async (req, res) => {
+app.delete("/post/:uuid", postexists, isAdminOrUserPost, async (req, res) => {
   try {
     const post = await db.post.findUnique({ where: { id: req.params?.uuid } });
     const user = await db.user.findUnique({ where: { id: req.user.id } });
-
-    // Check if the post exists
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-
     // Check if the user is authorized to delete the post
-    if (post.userId !== req.user.id && user?.isAdmin === false) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
     await db.post.delete({
       where: {
         id: req.params.uuid,

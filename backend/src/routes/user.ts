@@ -3,7 +3,51 @@ import db from "../db";
 
 const app = express.Router();
 
-app.get("/user", async (req, res) => {
+const userExists: express.RequestHandler = async (req, res, next) => {
+  try {
+    const user = await db.user.findUnique({
+      where: {
+        id: req.params?.uuid,
+      },
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    return next();
+  } catch (e) {
+    console.log(e);
+    return res.status(400).json({ message: "User not found" });
+  }
+};
+
+const isAdminOrUser: express.RequestHandler = async (req, res, next) => {
+  try {
+    const user = await db.user.findUnique({
+      where: {
+        id: req.user.id,
+      },
+    });
+    if (user?.isAdmin) {
+      return next();
+    }
+    const isOwner = await db.user.findUnique({
+      where: {
+        id: req.user.id,
+      },
+    });
+    if (!isOwner) {
+      throw new Error("You should not be here");
+    }
+    return next();
+  } catch (e) {
+    console.log(e);
+    return res.status(400).json({ message: "You are not the admin or owner" });
+  }
+};
+
+
+
+app.get("/user", userExists, async (req, res) => {
   try {
     const user = await db.user.findUnique({
       where: {
@@ -21,10 +65,19 @@ app.get("/user", async (req, res) => {
   }
 });
 
-app.put("/user", async (req, res) => {
+app.put("/user", userExists, isAdminOrUser, async (req, res) => {
   try {
     if (!req.body.name) {
       return res.status(400).json({ message: "Invalid body provided" });
+    }
+    const user = await db.user.findUnique({
+      where: {
+        id: req.user.id,
+      },
+    });
+
+    if(user?.isAdmin) {
+      return res.status(400).json({ message: "You can't do this" });
     }
 
     const updatedUser = await db.user.update({
@@ -49,7 +102,7 @@ app.put("/user", async (req, res) => {
   }
 });
 
-app.delete("/user", async (req, res) => {
+app.delete("/user", userExists, isAdminOrUser ,async (req, res) => {
   try {
     if (!req.user) {
       return res.status(401).json({ message: "Not authenticated" });
@@ -59,28 +112,14 @@ app.delete("/user", async (req, res) => {
         id: req.body.id,
       },
     });
-    const user = await db.user.findUnique({
-      where: {
-        id: req.user.id,
-      },
-    });
-    if (!userToDelete) {
-      return res.status(400).json({ message: "User not found" });
-    }
-    if (req.user.id !== userToDelete.id && user?.isAdmin === false) {
-      return res
-        .status(403)
-        .json({ message: "You are not allowed to delete this user" });
-    }
-
     await db.user.delete({
       where: {
-        id: userToDelete.id,
+        id: userToDelete?.id,
       },
     });
     return res
       .status(200)
-      .json({ message: `Successfully deleted user with id ${userToDelete.id}` });
+      .json({ message: `Successfully deleted user with id ${userToDelete?.id}` });
   } catch (e) {
     console.error(e);
     return res.status(400).json({ message: "An error ocurred" });
