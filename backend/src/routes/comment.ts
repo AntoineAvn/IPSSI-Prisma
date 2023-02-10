@@ -119,8 +119,14 @@ router.put(
           id: req.user.id,
         },
       });
+
+       // Retrieve the comment from the database
+       const comment = await db.comment.findUnique({
+        where: { id: req.params?.Cuuid },
+      });
+
       // Check if the user is an admin
-      if (user?.isAdmin) {
+      if (user?.isAdmin && (comment?.userId !== user.id )) {
         return res.status(400).json({ message: "You can't modify this" });
       }
       // Update the comment
