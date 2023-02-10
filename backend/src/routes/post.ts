@@ -51,11 +51,9 @@ const isAdminOrUserPost: RequestHandler = async (req, res, next) => {
     }
     // If the user is not the owner, throw an error
     if (req.user.id !== req.body.id) {
-      return res
-        .status(400)
-        .json({
-          message: "You can't delete or modify an other post than yours.",
-        });
+      return res.status(400).json({
+        message: "You can't delete or modify an other post than yours.",
+      });
     }
     // If the user is the owner, move on to the next middleware
     return next();
@@ -154,9 +152,6 @@ app.put(
   postexists,
   // Middleware to check if the user making the request is either an admin or the author of the post
   isAdminOrUserPost,
-  // Middleware to validate the request body
-  body("name").exists().isString().notEmpty(),
-  body("content").isString(),
   //Check uuid param
   check("uuid").isUUID(),
   async (req, res) => {
@@ -178,13 +173,17 @@ app.put(
         return res.status(401).json({ message: "You can't modify this" });
       }
       // Update the post in the database
+      if (!req.body.name && !req.body.content) {
+        return res.status(400).json({ message: "Please provide a body." });
+      }
+
       const updatedPost = await db.post.update({
         where: {
           id: req.params?.uuid,
         },
         data: {
-          name: req.body.name,
-          content: req.body.content
+          name: req.body.name || undefined,
+          content: req.body.content || undefined,
         },
       });
 
@@ -192,7 +191,9 @@ app.put(
       return res.status(200).json(updatedPost);
     } catch (e) {
       // If an error occurs, return an error message
-      return res.status(400).json({ message: e || "Error while updating" });
+      return res.status(400).json({
+        message: e || "Error while updating",
+      });
     }
   }
 );
