@@ -108,11 +108,6 @@ app.put(
         },
       });
 
-      // Prevent administrators from updating their name
-      if (user?.isAdmin) {
-        return res.status(400).json({ message: "You can't do this" });
-      }
-
       // Update the user's name
       const updatedUser = await db.user.update({
         where: {
