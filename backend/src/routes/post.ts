@@ -16,7 +16,7 @@ const postexists: RequestHandler = async (req, res, next) => {
     });
     // If the post doesn't exist, throw an error
     if (!post) {
-      throw new Error("Post not found");
+      return res.status(400).json({ message: "Post not found" });
     }
     // If the post exists, move on to the next middleware
     return next();
@@ -40,6 +40,22 @@ const isAdminOrUserPost: RequestHandler = async (req, res, next) => {
     if (user?.isAdmin) {
       return next();
     }
+    if (req.method === "PUT" || req.method === "DELETE") {
+      const isOwner = await db.post.findUnique({
+        where: {
+          id: req.params.uuid,
+        },
+      });
+      console.log(isOwner?.userId);
+      console.log(req.user.id);
+      if (isOwner?.userId !== req.user.id) {
+        return res
+          .status(401)
+          .json({ message: "You can't modify or delete other an yours" });
+      }
+      return next();
+    }
+
     // If the user is not an admin, check if they are the owner of the post
     const isOwner = await db.post.findFirstOrThrow({
       where: {
