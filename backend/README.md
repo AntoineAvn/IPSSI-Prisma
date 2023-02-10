@@ -55,6 +55,7 @@ $ pnpm prisma studio
 
 ```json
 {
+    "id": "uuid",
     "name": "Johnny",
     "username": "John"
 }
