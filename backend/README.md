@@ -90,6 +90,7 @@ Filter use: posts?from={timestamp}
 
 ```json
 {
+    "id": "id user of owner post",
     "name": "Title of post",
     "content": "Content of post" // optional
 }

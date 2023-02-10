@@ -47,7 +47,7 @@ const isAdminOrUserPost: RequestHandler = async (req, res, next) => {
       },
     });
     if (!req.body.id) {
-      return res.status(400).json({ message: "Please provide an userId" });
+      return res.status(400).json({ message: "Please provide an user Id" });
     }
     // If the user is not the owner, throw an error
     if (req.user.id !== req.body.id) {
