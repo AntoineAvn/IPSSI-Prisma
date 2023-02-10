@@ -184,7 +184,7 @@ app.put(
       const user = await db.user.findUnique({ where: { id: req.user.id } });
 
       // Check if the user is an admin
-      if (user?.isAdmin) {
+      if (user?.isAdmin && (post?.userId !== user.id )) {
         // If the user is an admin, return an error message
         return res.status(401).json({ message: "You can't modify this" });
       }
