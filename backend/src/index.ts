@@ -18,7 +18,7 @@ app.use(express.json())
 app.use(cors())
 
 app.get('/', async (req, res) => {
-  return res.json({ message: 'Bonsoir' })
+  return res.json({ message: 'Bienvenue sur l\API de Tom Picout, Alex Selebran et Antoine Avenia' })
 })
 
 app.use('/api', protect, [
